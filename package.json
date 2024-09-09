@@ -1,6 +1,6 @@
 {
     "name": "react-service-registry",
-    "description": "A template for creating React packages",
+    "description": "A package for managing services and dependencies in React applications",
     "version": "1.0.0",
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",

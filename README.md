@@ -1,6 +1,6 @@
 # React Service Registry
 
-A template for creating React packages.
+A package for managing services and dependencies in React applications.
 
 ## Getting Started
 
