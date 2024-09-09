@@ -10,6 +10,145 @@ To install this package use npm:
 npm install react-service-registry
 ```
 
+## Basic Usage
+
+### Defining Services
+
+First, define the services that will be registered and used in the application:
+
+```ts
+// src/services/SomeService.ts
+export interface SomeServiceInterface {
+    fetchData: () => Promise<string>;
+}
+
+class SomeService implements SomeServiceInterface {
+    fetchData() {
+        return Promise.resolve('Data from SomeService');
+    }
+}
+
+export default SomeService;
+```
+
+### Registering Services
+
+Services are registered with the ServiceRegistry to ensure centralized access across the application:
+
+```ts
+// src/services/index.ts
+import { ServiceRegistry } from 'react-service-registry';
+import SomeService from './SomeService';
+
+const serviceRegistry = new ServiceRegistry();
+
+serviceRegistry.register('someService', () => new SomeService());
+
+export default serviceRegistry;
+```
+
+### Wrapping the Application with the Service Provider
+
+Wrap the root component with the ServiceProvider to make the service registry accessible throughout the application via context:
+
+```tsx
+// index.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ServiceProvider } from 'react-service-registry';
+import App from './App';
+import serviceRegistry from './services';
+
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+root.render(
+    <ServiceProvider serviceRegistry={serviceRegistry}>
+        <App />
+    </ServiceProvider>
+);
+```
+
+### Accessing Services with useService
+
+Use the useService hook to access registered services in functional components:
+
+```tsx
+// src/components/SomeComponent.tsx
+import React from 'react';
+import { useService } from 'react-service-registry';
+import { SomeServiceInterface } from '../services/SomeService';
+
+export interface SomeComponentProps {}
+
+const SomeComponent: React.FC<SomeComponentProps> = () => {
+    const someService = useService<SomeServiceInterface>('someService');
+
+    React.useEffect(() => {
+        someService.fetchData().then(data => {
+            console.log(data);
+        });
+    }, [someService]);
+
+    return <div>Check the console for data!</div>;
+};
+
+export default SomeComponent;
+```
+
+## Advanced Usage
+
+### Defining a Service Type Map
+
+To avoid specifying types for services every time, create a service type map that associates service names with their respective types:
+
+```ts
+// src/types/ServiceTypes.ts
+import { SomeServiceInterface } from '../services/SomeService';
+
+export interface ServiceTypeMap {
+    someService: SomeServiceInterface;
+}
+```
+
+### Creating a Typed useService Hook
+
+Create a typed version of the useService hook that automatically infers the service type based on the service name:
+
+```ts
+// src/hooks/useTypedService.ts
+import { useService } from 'react-service-registry';
+import { ServiceTypeMap } from '../types/ServiceTypes';
+
+const useTypedService = <K extends keyof ServiceTypeMap>(name: K): ServiceTypeMap[K] => {
+    return useService<ServiceTypeMap[K]>(name);
+};
+
+export default useTypedService;
+```
+
+### Accessing Services with the Typed Hook
+
+The typed useService hook makes it easier to retrieve services without manually specifying their types:
+
+```tsx
+// src/components/AnotherComponent.tsx
+import React from 'react';
+import useTypedService from '../hooks/useTypedService';
+
+export interface AnotherComponentProps {}
+
+const AnotherComponent: React.FC<AnotherComponentProps> = () => {
+    const someService = useTypedService('someService');
+
+    React.useEffect(() => {
+        someService.fetchData().then(data => console.log(data));
+    }, [someService]);
+
+    return <div>Check the console for data!</div>;
+};
+
+export default AnotherComponent;
+```
+
 ## Local Development
 
 For local development, use Yalc to install this package in your project.
