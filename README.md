@@ -33,7 +33,7 @@ export default SomeService;
 
 ### Registering Services
 
-Services are registered with the ServiceRegistry to ensure centralized access across the application:
+Services are registered with the `ServiceRegistry` to ensure centralized access across the application:
 
 ```ts
 // src/services/index.ts
@@ -49,7 +49,7 @@ export default serviceRegistry;
 
 ### Wrapping the Application with the Service Provider
 
-Wrap the root component with the ServiceProvider to make the service registry accessible throughout the application via context:
+Wrap the root component with the `ServiceProvider` to make the service registry accessible throughout the application via context:
 
 ```tsx
 // index.tsx
@@ -69,7 +69,7 @@ root.render(
 
 ### Accessing Services with useService
 
-Use the useService hook to access registered services in functional components:
+Use the `useService` hook to access registered services in functional components:
 
 ```tsx
 // src/components/SomeComponent.tsx
@@ -111,7 +111,7 @@ export interface ServiceTypeMap {
 
 ### Creating a Typed useService Hook
 
-Create a typed version of the useService hook that automatically infers the service type based on the service name:
+Create a typed version of the `useService` hook that automatically infers the service type based on the service name:
 
 ```ts
 // src/hooks/useTypedService.ts
@@ -127,7 +127,7 @@ export default useTypedService;
 
 ### Accessing Services with the Typed Hook
 
-The typed useService hook makes it easier to retrieve services without manually specifying their types:
+The typed `useService` hook makes it easier to retrieve services without manually specifying their types:
 
 ```tsx
 // src/components/AnotherComponent.tsx
