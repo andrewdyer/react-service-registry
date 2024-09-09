@@ -1,5 +1,5 @@
 {
-    "name": "react-package-template",
+    "name": "react-service-registry",
     "description": "A template for creating React packages",
     "version": "1.0.0",
     "main": "dist/cjs/index.js",
@@ -31,7 +31,7 @@
     "author": "Andrew Dyer (https://github.com/andrewdyer)",
     "repository": {
         "type": "git",
-        "url": "https://github.com/andrewdyer/react-package-template.git"
+        "url": "https://github.com/andrewdyer/react-service-registry.git"
     },
     "license": "MIT",
     "devDependencies": {
