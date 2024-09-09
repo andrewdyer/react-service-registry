@@ -1,5 +1,1 @@
-import ServiceRegistry from './ServiceRegistry';
-
-const serviceRegistry = new ServiceRegistry();
-
-export default serviceRegistry;
+export { default } from './ServiceRegistry';

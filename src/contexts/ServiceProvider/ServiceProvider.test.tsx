@@ -1,23 +1,50 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { serviceRegistry } from '../../registries';
-import ServiceContext from '../ServiceContext';
+import { ServiceContext } from '../../contexts';
+import { ServiceRegistry } from '../../registries';
 import ServiceProvider from './ServiceProvider';
 
-const MockChild: React.FC = () => {
-    const registry = React.useContext(ServiceContext);
+class MockService {
+    public value = 'Test service value';
+}
 
-    return <div>{registry === serviceRegistry ? 'Registry Provided' : 'No Registry'}</div>;
+const TestComponent: React.FC = () => {
+    const serviceRegistry = React.useContext(ServiceContext);
+    
+    if (!serviceRegistry) {
+        throw new Error('ServiceRegistry not found in context');
+    }
+
+    const service = serviceRegistry.get<MockService>('mockService');
+
+    return <div>{service.value}</div>;
 };
 
 describe('ServiceProvider', () => {
-    test('should provide the serviceRegistry via context', () => {
+    let serviceRegistry: ServiceRegistry;
+
+    beforeEach(() => {
+        serviceRegistry = new ServiceRegistry();
+        serviceRegistry.register('mockService', () => new MockService());
+    });
+
+    test('provides ServiceRegistry to child components', () => {
         render(
-            <ServiceProvider>
-                <MockChild />
+            <ServiceProvider serviceRegistry={serviceRegistry}>
+                <TestComponent />
             </ServiceProvider>
         );
 
-        expect(screen.getByText('Registry Provided')).toBeInTheDocument();
+        expect(screen.getByText('Test service value')).toBeInTheDocument();
+    });
+
+    test('throws error when ServiceRegistry is not provided', () => {
+        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+        expect(() => render(<TestComponent />)).toThrowError(
+            'ServiceRegistry not found in context'
+        );
+
+        consoleSpy.mockRestore();
     });
 });
