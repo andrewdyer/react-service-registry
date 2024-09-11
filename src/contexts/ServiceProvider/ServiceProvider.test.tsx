@@ -10,7 +10,7 @@ class MockService {
 
 const TestComponent: React.FC = () => {
     const serviceRegistry = React.useContext(ServiceContext);
-    
+
     if (!serviceRegistry) {
         throw new Error('ServiceRegistry not found in context');
     }
