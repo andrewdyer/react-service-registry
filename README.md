@@ -33,16 +33,18 @@ export default SomeService;
 
 ### Registering Services
 
-Services are registered with the `ServiceRegistry` to ensure centralized access across the application:
+Services are registered with the `configureRegistry` utility to ensure centralized access across the application:
 
 ```ts
 // src/services/index.ts
-import { ServiceRegistry } from 'react-service-registry';
+import { configureRegistry } from 'react-service-registry';
 import SomeService from './SomeService';
 
-const serviceRegistry = new ServiceRegistry();
+const services = {
+    someService: () => new SomeService()
+};
 
-serviceRegistry.register('someService', () => new SomeService());
+const serviceRegistry = configureRegistry(services)
 
 export default serviceRegistry;
 ```
@@ -101,12 +103,19 @@ export default SomeComponent;
 To avoid specifying types for services every time, create a service type map that associates service names with their respective types:
 
 ```ts
-// src/types/ServiceTypes.ts
-import { SomeServiceInterface } from '../services/SomeService';
+// src/services/index.ts
+import { configureRegistry, type ServiceTypeMap } from 'react-service-registry';
+import SomeService from './SomeService';
 
-export interface ServiceTypeMap {
-    someService: SomeServiceInterface;
-}
+const services = {
+    someService: () => new SomeService()
+};
+
+const serviceRegistry = configureRegistry(services)
+
+export type AppServiceTypeMap = ServiceTypeMap<typeof services>;
+
+export default serviceRegistry;
 ```
 
 ### Creating a Typed useService Hook
@@ -116,10 +125,10 @@ Create a typed version of the `useService` hook that automatically infers the se
 ```ts
 // src/hooks/useTypedService.ts
 import { useService } from 'react-service-registry';
-import { ServiceTypeMap } from '../types/ServiceTypes';
+import type { AppServiceTypeMap } from '../services';
 
-const useTypedService = <K extends keyof ServiceTypeMap>(name: K): ServiceTypeMap[K] => {
-    return useService<ServiceTypeMap[K]>(name);
+const useTypedService = <K extends keyof AppServiceTypeMap>(name: K): AppServiceTypeMap[K] => {
+    return useService<AppServiceTypeMap[K]>(name);
 };
 
 export default useTypedService;
